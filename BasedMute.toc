@@ -1,0 +1,9 @@
+## Interface: 16001, 11507
+## Title: BasedMute
+## Notes: Hides chat and invites from guilds on your list (empty by default). Client-side only; does not use the ignore list.
+## Author: Gigabear (fork), Sol (original OlympusMute)
+## Version: 1.3.0
+## IconTexture: Interface\AddOns\BasedMute\Icon
+## SavedVariables: BasedMuteDB
+
+BasedMute.lua
