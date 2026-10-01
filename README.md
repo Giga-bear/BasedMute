@@ -21,3 +21,5 @@ Download the latest release zip and extract the `BasedMute` folder into
 
 ## Credits
 Fork by Gigabear. Original OlympusMute by Sol. MIT licensed, see `LICENSE.txt`.
+
+The original OlympusMute was published under the MIT License on CurseForge ([archived Sep 24, 2026](https://web.archive.org/web/20260924044528/https://www.curseforge.com/wow/addons/olympusmute)). BasedMute is a fork of that MIT-licensed release.
