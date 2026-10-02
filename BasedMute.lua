@@ -1746,21 +1746,32 @@ StaticPopupDialogs["BASEDMUTE_SHARE_SEND"] = {
 
 local incoming = {}       -- sender|id -> { parts, total, got, t }
 local lastOfferFrom = {}  -- sender -> time of their last offer shown
+local lastOfferAny = 0    -- time of the last offer shown from anyone
+local SENDER_COOLDOWN, GLOBAL_COOLDOWN, MAX_INFLIGHT = 120, 20, 10
 local function OnShareMessage(text, channel, sender)
     if not db.acceptShares or type(text) ~= "string" or type(sender) ~= "string" then return end
     if IsSecret(text) or IsSecret(sender) then return end
     local key = Normalize(sender)
     if key == playerKey then return end                 -- our own group/guild broadcast
     if MutedGuildForName(sender) then return end        -- never from muted players
+    local now = GetTime()
+    if lastOfferFrom[key] and now - lastOfferFrom[key] < SENDER_COOLDOWN then return end
+    if now - lastOfferAny < GLOBAL_COOLDOWN then return end
     local id, i, total, part = text:match("^(%d+):(%d+)/(%d+):(.*)$")
     i, total = tonumber(i), tonumber(total)
     if not id or not i or not total or total < 1 or total > 20 or i > total then return end
     local slot = sender .. "|" .. id
     local entry = incoming[slot]
     if not entry then
-        entry = { parts = {}, total = total, got = 0, t = GetTime() }
+        local inflight = 0
+        for k, v in pairs(incoming) do
+            if now - v.t > 30 then incoming[k] = nil
+            elseif v.from == key then return
+            else inflight = inflight + 1 end
+        end
+        if inflight >= MAX_INFLIGHT then return end
+        entry = { parts = {}, total = total, got = 0, t = now, from = key }
         incoming[slot] = entry
-        for k, v in pairs(incoming) do if GetTime() - v.t > 30 then incoming[k] = nil end end
     end
     if entry.parts[i] then return end
     entry.parts[i] = part; entry.got = entry.got + 1
@@ -1768,9 +1779,8 @@ local function OnShareMessage(text, channel, sender)
     incoming[slot] = nil
     local guilds, words = ParseSharePayload(table.concat(entry.parts))
     if not guilds or (#guilds + #words == 0) then return end
-    if lastOfferFrom[key] and GetTime() - lastOfferFrom[key] < 60 then return end   -- no popup spam
     if StaticPopup_Visible and StaticPopup_Visible("BASEDMUTE_SHARE") then return end
-    lastOfferFrom[key] = GetTime()
+    lastOfferFrom[key] = GetTime(); lastOfferAny = GetTime()
     local preview = ("Guild names (%d): %s\nFiltered words (%d): %s"):format(
         #guilds, ShareSummary(guilds), #words, ShareSummary(words))
     StaticPopup_Show("BASEDMUTE_SHARE", sender, preview, { from = sender, guilds = guilds, words = words })
