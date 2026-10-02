@@ -1057,7 +1057,7 @@ f:SetScript("OnEvent", function(self, event, arg1, ...)
         end
         if type(db.hiddenTotal) ~= "number" then db.hiddenTotal = 0 end
         for k, v in pairs({ enabled = true, declineDuel = true, declineTrade = true,
-                            groupWarn = true, whisperWarn = true, hideBubbles = true, acceptShares = true }) do
+                            groupWarn = true, whisperWarn = true, hideBubbles = true, acceptShares = false }) do
             if type(db[k]) ~= "boolean" then db[k] = v end
         end
         -- Entries: drop anything that isn't the right kind of value.

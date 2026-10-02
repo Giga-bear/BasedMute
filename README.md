@@ -10,7 +10,7 @@ Add guild names or keywords, and BasedMute hides chat from matching players on y
 - Auto-decline guild, group, duel and trade invites from muted players (optional)
 - Warnings when you whisper or invite someone on your list
 - Guild whitelist for exceptions
-- Share your lists with friends, your group or your guild; they choose whether to accept
+- Share your lists with friends, your group or your guild; they choose whether to accept (receiving shares is off by default, `/bmute shares on` to enable)
 
 ## Install
 Download the latest release zip and extract the `BasedMute` folder into
