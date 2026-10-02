@@ -41,6 +41,15 @@ local function Print(msg)
     DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. msg)
 end
 
+local noticeAt, noticeAny = {}, 0
+local function Notice(who, msg)
+    local now = GetTime()
+    local k = tostring(who)
+    if (noticeAt[k] and now - noticeAt[k] < 300) or now - noticeAny < 3 then return end
+    noticeAt[k] = now; noticeAny = now
+    Print(msg)
+end
+
 local IsSecret = issecretvalue or function() return false end
 
 -- True if the guild name contains any keyword on the list.
@@ -230,7 +239,7 @@ local function DeclinePartyInvite(name, guild)
     pendingInvite = nil
     DeclineGroup()
     if StaticPopup_Hide then StaticPopup_Hide("PARTY_INVITE") end
-    Print(("declined a group invite from %s <%s>."):format(tostring(name), tostring(guild)))
+    Notice(name, ("declined a group invite from %s <%s>."):format(tostring(name), tostring(guild)))
 end
 
 -- Highest level seen on an muted-guild member; the Scan rotation stops there.
@@ -528,7 +537,7 @@ local function HandleGuildInvite(inviter, guildName)
         Block(nil, inviter, guildName)
     end
     if GetTime() - lastGuildDecline > 2 then
-        Print(("declined a guild invite from <%s>."):format(guildName))
+        Notice("guild:" .. tostring(guildName), ("declined a guild invite from <%s>."):format(guildName))
     end
     lastGuildDecline = GetTime()
 end
@@ -879,7 +888,7 @@ local function HandleDuel(challenger)
     if not guild then return end
     CancelDuel()
     if StaticPopup_Hide then StaticPopup_Hide("DUEL_REQUESTED") end
-    Print(("declined a duel from %s <%s>."):format(challenger, tostring(guild)))
+    Notice(challenger, ("declined a duel from %s <%s>."):format(challenger, tostring(guild)))
 end
 
 local function HandleTrade(name)
@@ -892,7 +901,7 @@ local function HandleTrade(name)
     if not guild then return end
     CancelTrade()
     if StaticPopup_Hide then StaticPopup_Hide("TRADE") end
-    Print(("declined a trade from %s <%s>."):format(name, tostring(guild)))
+    Notice(name, ("declined a trade from %s <%s>."):format(name, tostring(guild)))
 end
 
 local function OnTooltipUnit(tooltip)
